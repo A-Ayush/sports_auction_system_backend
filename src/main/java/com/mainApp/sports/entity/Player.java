@@ -2,7 +2,6 @@ package com.mainApp.sports.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.*;
 
 @Getter
@@ -27,9 +26,24 @@ public class Player {
     /** filename of uploaded profile picture */
     private String photoFilename;
 
+    // 🆕 Jersey details
+    @Column(name = "jersey_name")
+    private String jerseyName;
+
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "jersey_number")
+    private Integer jerseyNumber;
+
+    @Column(name = "size")
+    private String size;
+
+    // 🆕 Role selection
+    @Column(name = "role")
+    private String role;
+
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter(AccessLevel.NONE) // manage list yourself for bi-directional safety
     private List<Event> events = new ArrayList<>();
-
-    // equals()/hashCode() manually if needed, but not auto-generated
 }

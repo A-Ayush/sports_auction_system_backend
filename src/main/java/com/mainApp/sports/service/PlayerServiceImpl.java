@@ -34,4 +34,14 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public void delete(Long id) { repo.deleteById(id); }
+
+    @Override
+    public Optional<Player> findByEmpIdAndName(String empId, String name) {
+        return repo.findByEmpIdAndName(empId, name);
+    }
+
+    @Override
+    public boolean hasSubmittedEvents(Long id){
+        return repo.hasSubmittedEvents(id);
+    }
 }

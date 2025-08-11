@@ -24,7 +24,9 @@ public class PlayerController {
     }
 
     @GetMapping
-    public List<Player> listAll() { return playerService.listAll(); }
+    public List<Player> listAll() {
+        return playerService.listAll();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Player> getById(@PathVariable Long id) {
@@ -38,18 +40,27 @@ public class PlayerController {
             @RequestPart String name,
             @RequestPart String empId,
             @RequestPart String department,
-            @RequestPart(required=false) MultipartFile photo
+            @RequestPart(required = false) String jerseyName,
+            @RequestPart(required = false) String gender,
+            @RequestPart(required = false) Integer jerseyNumber,
+            @RequestPart(required = false) String size,
+            @RequestPart(required = false) String role,
+            @RequestPart(required = false) MultipartFile photo
     ) throws Exception {
 
         Player p = new Player();
-
         p.setName(name);
         p.setEmpId(empId);
         p.setDepartment(department);
+        p.setJerseyName(jerseyName);
+        p.setGender(gender);
+        p.setJerseyNumber(jerseyNumber);
+        p.setSize(size);
+        p.setRole(role);
 
         if (photo != null && !photo.isEmpty()) {
-            var orig = Paths.get(photo.getOriginalFilename()).getFileName().toString();
-            var stored = UUID.randomUUID() + "-" + orig;
+            String orig = Paths.get(photo.getOriginalFilename()).getFileName().toString();
+            String stored = UUID.randomUUID() + "-" + orig;
             Files.copy(photo.getInputStream(), uploadDir.resolve(stored), StandardCopyOption.REPLACE_EXISTING);
             p.setPhotoFilename(stored);
         }
@@ -66,7 +77,7 @@ public class PlayerController {
         try {
             Player updated = playerService.update(id, changes);
             return ResponseEntity.ok(updated);
-        } catch(RuntimeException ex) {
+        } catch (RuntimeException ex) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -78,20 +89,25 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}/photo")
-    public Optional<ResponseEntity<?>> getPhoto(@PathVariable Long id) throws Exception {
+    public Optional<ResponseEntity<?>> getPhoto(@PathVariable Long id) {
         return playerService.getById(id).map(player -> {
             if (player.getPhotoFilename() == null) return ResponseEntity.notFound().build();
-            Path file = uploadDir.resolve("");
+            Path file = uploadDir.resolve(player.getPhotoFilename());
             if (!Files.exists(file)) return ResponseEntity.notFound().build();
-            UrlResource resource;
             try {
-                resource = new UrlResource(file.toUri());
+                UrlResource resource = new UrlResource(file.toUri());
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG) // optionally detect original type
+                        .body(resource);
             } catch (Exception e) {
                 return ResponseEntity.internalServerError().build();
             }
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG) // you can store original contentType if needed
-                    .body(resource);
         });
+    }
+
+    @GetMapping("/{id}/hasSelectedEvents")
+    public ResponseEntity<Boolean> hasSelectedEvents(@PathVariable Long id) {
+        boolean hasSubmitted = playerService.hasSubmittedEvents(id);
+        return ResponseEntity.ok(hasSubmitted);
     }
 }

@@ -10,4 +10,6 @@ public interface PlayerService {
     Player create(Player player);
     Player update(Long id, Player changes);
     void delete(Long id);
+    Optional<Player> findByEmpIdAndName(String empId, String name);
+    boolean hasSubmittedEvents(Long id);
 }
