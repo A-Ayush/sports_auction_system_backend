@@ -42,7 +42,7 @@ public class PlayerController {
             @RequestPart String department,
             @RequestPart(required = false) String jerseyName,
             @RequestPart(required = false) String gender,
-            @RequestPart(required = false) Integer jerseyNumber,
+            @RequestPart(required = false) String jerseyNumber,
             @RequestPart(required = false) String size,
             @RequestPart(required = false) String role,
             @RequestPart(required = false) MultipartFile photo
@@ -54,7 +54,7 @@ public class PlayerController {
         p.setDepartment(department);
         p.setJerseyName(jerseyName);
         p.setGender(gender);
-        p.setJerseyNumber(jerseyNumber);
+        p.setJerseyNumber(Integer.valueOf(jerseyNumber));
         p.setSize(size);
         p.setRole(role);
 
