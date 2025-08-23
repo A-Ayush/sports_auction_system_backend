@@ -37,6 +37,7 @@ public class PlayerController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Player> create(
+            @RequestPart String email,
             @RequestPart String name,
             @RequestPart String empId,
             @RequestPart String department,
@@ -48,7 +49,15 @@ public class PlayerController {
             @RequestPart(required = false) MultipartFile photo
     ) throws Exception {
 
+        Player p1 = playerService.findByEmail(email)
+                .orElseGet(() -> playerService.findByEmpIdAndName(empId, name)
+                        .orElse(null));
+        if (p1 != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(p1); // Conflict if player already exists
+        }
         Player p = new Player();
+        p.setEmail(email);
         p.setName(name);
         p.setEmpId(empId);
         p.setDepartment(department);
@@ -81,6 +90,44 @@ public class PlayerController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/getdetails")
+    public ResponseEntity<Player> getDetailsByEmail(@RequestParam String email) {
+
+        Player player = playerService.findByEmail(email)
+                .orElse(null);
+        if (player == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            Player p1 = new Player();
+            // Optionally, you can return the player details directly
+            p1.setEmail(player.getEmail());
+            p1.setName(player.getName());
+            p1.setEmpId(player.getEmpId());
+            return ResponseEntity.status(HttpStatus.OK).body(p1);
+        }
+
+    }
+
+  @DeleteMapping("/delete")
+  public ResponseEntity<Void> deleteByEmail(@RequestParam String email) {
+      try {
+          // Find the player by email
+          Player player = playerService.findByEmail(email)
+                  .orElseThrow(() -> new RuntimeException("Player not found"));
+
+          // Delete associated events first
+          player.getEvents().clear();
+          playerService.save(player);
+
+          // Delete the player
+          playerService.delete(player.getId());
+
+          return ResponseEntity.noContent().build();
+      } catch (RuntimeException ex) {
+          return ResponseEntity.notFound().build();
+      }
+  }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

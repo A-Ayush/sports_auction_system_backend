@@ -1,5 +1,6 @@
 package com.mainApp.sports.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
@@ -17,6 +18,9 @@ public class Player {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String email;
 
     @Column(name = "emp_id", nullable = false)
     private String empId;
@@ -43,7 +47,8 @@ public class Player {
     @Column(name = "role")
     private String role;
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Setter(AccessLevel.NONE) // manage list yourself for bi-directional safety
+    @JsonIgnore
     private List<Event> events = new ArrayList<>();
 }
