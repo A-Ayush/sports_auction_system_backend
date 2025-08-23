@@ -6,10 +6,15 @@ import java.util.Optional;
 
 public interface PlayerService {
     List<Player> listAll();
+
+    Player save(Player player);
     Optional<Player> getById(Long id);
     Player create(Player player);
     Player update(Long id, Player changes);
     void delete(Long id);
     Optional<Player> findByEmpIdAndName(String empId, String name);
+
+    Optional<Player> findByEmail(String email);
+
     boolean hasSubmittedEvents(Long id);
 }

@@ -17,6 +17,11 @@ public class PlayerServiceImpl implements PlayerService {
     public List<Player> listAll() { return repo.findAll(); }
 
     @Override
+    public Player save(Player player) {
+        return repo.save(player);
+    }
+
+    @Override
     public Optional<Player> getById(Long id) { return repo.findById(id); }
 
     @Override
@@ -38,6 +43,11 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public Optional<Player> findByEmpIdAndName(String empId, String name) {
         return repo.findByEmpIdAndName(empId, name);
+    }
+
+    @Override
+    public Optional<Player> findByEmail(String email) {
+        return repo.findByEmail(email);
     }
 
     @Override
